@@ -4,54 +4,63 @@ import axios from "axios";
 class City extends Component {
   constructor(props) {
     super(props);
-    this.state = { cityName: "" };
+    this.state = {cityName: "",
+                  zipCodes: [],
+                  outputZip: "",
+                  isShow: false};
   }
 
-  handleSubmit(){
-
+  handleSubmit = ()=>{
+    this.componentDidMount();
+    let result = "";
+    for(let i = 0; i < this.state.zipCodes.length; i++){
+      if(i === 0 ) 
+        result += "[ " + this.state.zipCodes[i] + ", ";
+      else if(i === this.state.zipCodes.length - 1) 
+        result += this.state.zipCodes[i] + " ]";
+      else  
+        result += this.state.zipCodes[i] + ", ";
+    }
+    this.setState({outputZip: result,isShow: true});
   }
 
   handleCityName = (evt)=>{
     let input = evt.target.value;
     let output = input.toUpperCase();
     this.setState({cityName: output});
-    console.log(this.state.cityName);
   }
 
-  // componentDidMount() {
-  //   axios
-  //     .get("https://pokeapi.co/api/v2/pokemon/" + this.props.name)
-  //     .then((response) => {
-  //       const data = response.data;
+  componentDidMount (){
+    axios
+      .get("http://ctp-zip-api.herokuapp.com/city/" + this.state.cityName)
+      .then((response) => {
+        const data = response.data;
 
-  //       const newCityName = {
-  //         name: data.name,
-  //         imageUrl: data.sprites.front_default,
-  //       };
-
-  //       this.setState({ cityName: newCityName });
-  //     })
-  //     .catch((err) => console.log(err));
-  // }
+        // const newCityName = data;
+        console.log(data.length);
+        this.setState({ zipCodes: data });
+      })
+      .catch((err) => console.log(err));
+  }
 
   render() {
     let display;
-    
+    if(this.state.isShow){
       display = (
         <>
           <ul>
-            <li>{this.state.cityName} </li>
+            <li> {this.state.outputZip}</li>
           </ul>
         </>
       );
+    }
     
-
     return (
       <div>
         <div> 
         <label>Input city name:</label>
           <input type="text" name="city" placeholder={this.state.cityName} onChange = {this.handleCityName} />
-          <button onClick={() => this.handleSubmit(this.state)}>submit</button>
+          <button onClick={this.handleSubmit}>submit</button>
         </div>
         <br></br>
         <div className="CityName">Output the zip for city:{display}</div>

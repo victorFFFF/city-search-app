@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
 import City from "./components/City";
-import axios from "axios";
+// import axios from "axios";
 
 class App extends Component {
   render() {
