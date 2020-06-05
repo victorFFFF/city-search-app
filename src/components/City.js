@@ -11,17 +11,9 @@ class City extends Component {
   }
 
   handleSubmit = ()=>{
-    this.componentDidMount();
-    let result = "";
-    for(let i = 0; i < this.state.zipCodes.length; i++){
-      if(i === 0 ) 
-        result += "[ " + this.state.zipCodes[i] + ", ";
-      else if(i === this.state.zipCodes.length - 1) 
-        result += this.state.zipCodes[i] + " ]";
-      else  
-        result += this.state.zipCodes[i] + ", ";
-    }
-    this.setState({outputZip: result,isShow: true});
+    this.callApi();
+
+    this.setState({isShow: true});
   }
 
   handleCityName = (evt)=>{
@@ -30,17 +22,28 @@ class City extends Component {
     this.setState({cityName: output});
   }
 
-  componentDidMount (){
+  callApi (){
     axios
       .get("http://ctp-zip-api.herokuapp.com/city/" + this.state.cityName)
       .then((response) => {
         const data = response.data;
 
-        // const newCityName = data;
         console.log(data.length);
         this.setState({ zipCodes: data });
+        
+        let result = "";
+        for(let i = 0; i < this.state.zipCodes.length; i++){
+          if(i === 0 ) 
+            result += "[ " + this.state.zipCodes[i] + ", ";
+          else if(i === this.state.zipCodes.length - 1) 
+            result += this.state.zipCodes[i] + " ]";
+          else  
+            result += this.state.zipCodes[i] + ", ";
+
+            this.setState({outputZip : result})
+        }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => alert("Invalid city name."));
   }
 
   render() {
@@ -49,7 +52,7 @@ class City extends Component {
       display = (
         <>
           <ul>
-            <li> {this.state.outputZip}</li>
+            <p> {this.state.outputZip}</p>
           </ul>
         </>
       );
